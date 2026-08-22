@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Mountain, Plus, Trash2, Printer, Copy, Check, Tent, Backpack,
   ClipboardList, MapPin, RotateCcw, FileText, Compass, Save,
-  History, LogOut, Download, Loader2,
+  History, LogOut, Loader2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,11 +14,11 @@ import { Separator } from "@/components/ui/separator";
 
 import { useFonts } from "./hooks/useFonts";
 import { uid } from "./utils/uid";
-import { downloadStateAsJson } from "./utils/download";
 import { seedState, emptyState } from "./data/seedData";
 import { SectionHeading, IconButton, Field } from "./components/Primitives";
 import { GearList } from "./components/GearList";
 import { DocumentView } from "./components/DocumentView";
+import { DownloadMenu } from "./components/DownloadMenu";
 import { AuthScreen } from "./components/AuthScreen";
 import { TripHistory } from "./components/TripHistory";
 import { useAuth } from "./context/AuthContext";
@@ -433,14 +433,7 @@ function ROPPlanner({ initialState, tripId, userId, onTripIdChange, onBackToHist
                   {copyState === "ok" ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                   {copyState === "ok" ? "Tersalin" : copyState === "fail" ? "Gagal, salin manual" : "Salin teks"}
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => downloadStateAsJson(state, state.trip.title)}
-                  className="border-[#8C9A82] gap-1.5"
-                >
-                  <Download className="h-3.5 w-3.5" /> Unduh data (.json)
-                </Button>
+                <DownloadMenu state={state} title={state.trip.title} />
                 <Button size="sm" onClick={() => window.print()} className="bg-[#A6752B] hover:bg-[#8f6423] text-[#EFEDE7] gap-1.5">
                   <Printer className="h-3.5 w-3.5" /> Cetak / Simpan PDF
                 </Button>
