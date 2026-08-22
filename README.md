@@ -1,6 +1,6 @@
 # ROP Pendakian — Field Operations Planner
 
-Website generator **Rencana Operasional Perjalanan (ROP)** untuk pendakian, dibuat dengan React + shadcn/ui + Tailwind + Supabase (akun pengguna & penyimpanan cloud). Proyek Vite yang lengkap dan siap dijalankan, serta siap di-deploy ke Vercel.
+Website generator **Rencana Operasional Perjalanan (ROP)** untuk pendakian, dibuat dengan React + shadcn/ui + Tailwind + Supabase.
 
 ## Fitur
 
@@ -12,86 +12,10 @@ Website generator **Rencana Operasional Perjalanan (ROP)** untuk pendakian, dibu
 
 ## Arsitektur singkat
 
-- **Frontend**: React + Vite + Tailwind + shadcn/ui (statis, cocok untuk Vercel).
+- **Frontend**: React + Vite + Tailwind + shadcn/ui.
 - **Auth & Database**: [Supabase](https://supabase.com) — Auth (Email/Password + Google OAuth) dan tabel Postgres `trips` dengan Row Level Security, sehingga tiap pengguna hanya bisa mengakses rencananya sendiri.
 - Tidak perlu server/back-end sendiri — Supabase diakses langsung dari browser lewat `@supabase/supabase-js`.
 
-## 1. Setup Supabase
-
-1. Buat project baru di [supabase.com](https://supabase.com) (gratis).
-2. Buka **SQL Editor**, tempel isi file [`supabase/schema.sql`](./supabase/schema.sql), lalu jalankan (Run). Ini membuat tabel `trips` beserta aturan keamanannya.
-3. Buka **Project Settings > API**, salin nilai **Project URL** dan **anon public key** — kamu butuh ini di langkah 2 bagian berikutnya.
-4. (Opsional) Aktifkan/nonaktifkan **Confirm email** di **Authentication > Providers > Email** sesuai kebutuhanmu. Secara default Supabase sudah mengaktifkan login Email/Password.
-
-### Mengaktifkan Login dengan Google
-
-1. Di [Google Cloud Console](https://console.cloud.google.com/apis/credentials), buat **OAuth client ID** bertipe **Web application**.
-2. Di Supabase, buka **Authentication > Providers > Google**, salin **Callback URL (for OAuth)** yang ditampilkan di sana (bentuknya `https://<project-ref>.supabase.co/auth/v1/callback`).
-3. Tempel Callback URL tadi ke kolom **Authorized redirect URIs** di Google Cloud Console, lalu simpan.
-4. Salin **Client ID** dan **Client Secret** dari Google, tempel ke form provider Google di Supabase, lalu aktifkan (Enable) dan simpan.
-5. Di Supabase, buka **Authentication > URL Configuration**:
-   - **Site URL**: isi dengan URL utama aplikasimu (mis. `http://localhost:5173` saat development, ganti ke domain Vercel setelah deploy).
-   - **Redirect URLs**: tambahkan `http://localhost:5173` dan domain Vercel kamu (mis. `https://nama-app.vercel.app`), supaya redirect login Google berhasil kembali ke aplikasi baik saat lokal maupun setelah deploy.
-
-## 2. Menjalankan proyek secara lokal
-
-Butuh [Node.js](https://nodejs.org) versi 18 ke atas.
-
-```bash
-npm install
-cp .env.example .env.local
-# lalu isi .env.local dengan VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY dari langkah di atas
-npm run dev
-```
-
-Buka alamat yang ditampilkan di terminal (biasanya `http://localhost:5173`).
-
-Untuk build produksi:
-
-```bash
-npm run build
-npm run preview
-```
-
-## 3. Deploy ke Vercel
-
-1. Push proyek ini ke repository GitHub/GitLab/Bitbucket kamu (pastikan `.env.local` **tidak** ikut ter-commit — sudah otomatis diabaikan lewat `.gitignore`).
-2. Di [vercel.com](https://vercel.com), klik **Add New > Project**, pilih repo ini. Vercel akan otomatis mendeteksi ini sebagai proyek Vite (build command `vite build`, output `dist`).
-3. Di step **Environment Variables**, tambahkan:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-4. Klik **Deploy**.
-5. Setelah dapat domain Vercel (mis. `https://nama-app.vercel.app`), kembali ke Supabase **Authentication > URL Configuration** dan tambahkan domain tersebut ke **Site URL** / **Redirect URLs** (lihat langkah 1.5 di atas) — kalau ini dilewati, login Google akan gagal redirect setelah deploy.
-
-## Struktur folder
-
-```
-rop-pendakian/
-├── README.md
-├── supabase/
-│   └── schema.sql            # Jalankan sekali di Supabase SQL Editor
-├── .env.example               # Contoh variabel lingkungan Supabase
-└── src/
-    ├── App.jsx                 # Shell aplikasi: auth gate, riwayat, dan planner
-    ├── context/
-    │   └── AuthContext.jsx    # Session Supabase + signUp/signIn/signInWithGoogle/signOut
-    ├── lib/
-    │   ├── supabaseClient.js  # Inisialisasi client Supabase dari env var
-    │   └── tripsApi.js        # CRUD rencana (list/get/create/update/delete)
-    ├── components/
-    │   ├── AuthScreen.jsx     # Form login/daftar + tombol Google
-    │   ├── TripHistory.jsx    # Daftar "Rencana Saya" (buka/unduh/hapus)
-    │   ├── Primitives.jsx     # SectionHeading, IconButton, Field
-    │   ├── GearList.jsx       # Checklist peralatan (kelompok & pribadi)
-    │   └── DocumentView.jsx   # Tampilan dokumen ROP siap cetak / PDF
-    ├── data/
-    │   └── seedData.js        # Data contoh + state kosong
-    ├── hooks/
-    │   └── useFonts.js         # Memuat Google Fonts (Fraunces, IBM Plex Mono, Inter)
-    └── utils/
-        ├── uid.js              # Helper pembuat id unik untuk tiap baris
-        └── download.js         # Unduh rencana sebagai file .json
-```
 
 ## Alur pemakaian
 
